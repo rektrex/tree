@@ -1,3 +1,9 @@
+pub mod lib;
+use lib::print;
+
+use std::env;
+
 fn main() {
-    println!("Hello, world!");
+    let args: Vec<String> = env::args().collect();
+    print(args);
 }
