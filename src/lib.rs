@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-pub fn print(dir: &Path , level: usize) -> std::io::Result<()> {
+pub fn print(dir: &Path , level: usize, mut dir_count: usize, mut file_count: usize) -> std::io::Result<(usize, usize)> {
     let padding = " ".repeat((level - 1) * 2);
 
     if let Some(dir_string) = dir.file_stem() {
@@ -23,12 +23,20 @@ pub fn print(dir: &Path , level: usize) -> std::io::Result<()> {
             }
 
             if fs::metadata(file.path())?.file_type().is_dir() {
-                print(&file.path(), level + 1);
+                dir_count += 1;
+                match print(&file.path(), level + 1, dir_count, file_count) {
+                    Ok((dc, fc)) => {
+                        dir_count = dc;
+                        file_count = fc;
+                    },
+                    Err(e) => {}
+                }
             } else {
+                file_count += 1;
                 println!("{}{}", padding, file_name);
             }
         }
     }
 
-    Ok(())
+    Ok((dir_count, file_count))
 }

@@ -12,5 +12,10 @@ fn main() {
         dir = Path::new(_dir);
     }
 
-    print(&dir, 1);
+    match print(&dir, 1, 0, 0) {
+        Ok((dc, fc)) => {
+            println!("\n{} directories, {} files", dc, fc);
+        },
+        Err(e) => {}
+    }
 }
