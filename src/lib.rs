@@ -1,18 +1,13 @@
 use std::fs;
 use std::path::Path;
 
-pub fn print(args: Vec<String>, level: usize) -> std::io::Result<()> {
-    let mut dir_count = 0;
-    let mut file_count = 0;
+pub fn print(dir: &Path , level: usize) -> std::io::Result<()> {
+    let padding = " ".repeat((level - 1) * 2);
 
-    let mut dir = Path::new(".");
-
-    if let Some(_dir) = args.get(1) {
-        dir = Path::new(_dir);
-    }
-
-    if let Some(dir_string) = dir.to_str() {
-        println!("{}", dir_string);
+    if let Some(dir_string) = dir.file_stem() {
+        if let Some(dir_string) = dir_string.to_str() {
+            println!("{}{}", padding, dir_string);
+        }
     }
 
     let padding = " ".repeat(level * 2);
@@ -21,18 +16,19 @@ pub fn print(args: Vec<String>, level: usize) -> std::io::Result<()> {
     for file in files {
         let file = file?;
         let file_name = file.file_name();
-        if let Ok(mut file_name) = file_name.into_string() {
-            if fs::metadata(file.path())?.file_type().is_dir() {
-                dir_count += 1;
-            } else {
-                file_count += 1;
+
+        if let Ok(file_name) = file_name.into_string() {
+            if file_name.starts_with(".") {
+                continue;
             }
-            file_name.insert_str(0, &padding);
-            println!("{}", file_name);
+
+            if fs::metadata(file.path())?.file_type().is_dir() {
+                print(&file.path(), level + 1);
+            } else {
+                println!("{}{}", padding, file_name);
+            }
         }
     }
-
-    println!("\n{} directories, {} files", dir_count, file_count);
 
     Ok(())
 }
