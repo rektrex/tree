@@ -29,7 +29,7 @@ pub fn print(dir: &Path , level: usize, mut dir_count: usize, mut file_count: us
                         dir_count = dc;
                         file_count = fc;
                     },
-                    Err(e) => {}
+                    Err(_e) => {}
                 }
             } else {
                 file_count += 1;

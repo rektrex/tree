@@ -16,6 +16,6 @@ fn main() {
         Ok((dc, fc)) => {
             println!("\n{} directories, {} files", dc, fc);
         },
-        Err(e) => {}
+        Err(_e) => {}
     }
 }
